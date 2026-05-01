@@ -25,14 +25,14 @@ CREATIVE FREEDOMS:
 
 ASSUMPTIONS:
 
-- Users must log in to get a personalized feed
-- Authors must log in to create articles
-- Each article must have at least 1 tag
-- Maximum 5 tags per article
-- User interaction includes clicks, likes, and reading time
-- Feed refresh happens on every login
-- Opposite tags are predefined manually (not AI-based)
-- MVP will not include comments initially
+ Users must log in to get a personalized feed
+ Authors must log in to create articles
+ Each article must have at least 1 tag
+ Maximum 5 tags per article
+User interaction includes clicks, likes, and reading time
+ Feed refresh happens on every login
+ Opposite tags are predefined manually (not AI-based)
+ MVP will not include comments initially
 
 
 
@@ -68,7 +68,7 @@ FEATURE LIST:
 10. Admin Tag Mapping
     Admin defines opposite tag relationships.
 
----
+
 
 CLIENT QUESTIONS:
 
@@ -83,4 +83,4 @@ CLIENT QUESTIONS:
 9. Should users control the diversity level in their feed?
 10. What are the performance expectations for feed loading time?
 
----
+
