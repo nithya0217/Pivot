@@ -1,11 +1,13 @@
 CLIENT UNDERSTANDING:
-We are building a digital publishing platform where authors can publish articles with tags and users can consume content. I have chosen Track B (Algorithmic Model) with a Negative Bias (Contrarian/Diversity Routing). The system will track user interactions with tags and recommend content that sometimes challenges the user's preferences by introducing opposite or diverse topics, improving content discovery and avoiding echo chambers.
+We are building a digital publishing platform where authors can publish articles with tags and users can consume content. 
+I have chosen Track B (Algorithmic Model) with a Negative Bias (Contrarian/Diversity Routing).
+The system will track user interactions with tags and recommend content that sometimes challenges the user's preferences by introducing opposite or diverse topics, improving content discovery and avoiding echo chambers.
 
 
 
 CREATIVE FREEDOMS:
 
-- Product Name: "DiverseFeed"
+- Product Name: "Pivot"
 - UI Design: Clean card-based layout similar to Medium
 - Tag System: Each article can have up to 5 tags
 - Opposite Tag Mapping:
@@ -19,7 +21,7 @@ CREATIVE FREEDOMS:
 - Dark mode UI support
 - Simple like/bookmark system
 
----
+
 
 ASSUMPTIONS:
 
@@ -32,7 +34,7 @@ ASSUMPTIONS:
 - Opposite tags are predefined manually (not AI-based)
 - MVP will not include comments initially
 
----
+
 
 FEATURE LIST:
 
