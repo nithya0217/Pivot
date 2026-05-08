@@ -100,4 +100,3 @@
 
 ---
 
-Does this technical breakdown align with the specific architecture you're planning to build for the MVP?
