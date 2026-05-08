@@ -2,82 +2,97 @@
 
 ### **1. User & Identity Management**
 
- 1.**Feature:** Create a new user profile.
- **API Endpoint:** `POST /api/users/register`
- **Database Action:** `INSERT INTO users (username, email, password_hash)`
+* **Feature 1: Register a new user**
+* **API Endpoint:** `POST /api/users/register`
+* **Database Action:** `INSERT INTO users (username, email, password_hash, is_author)`
 
 
-2. **Feature:** Update author biography.
+* **Feature 2: Login user**
+* **API Endpoint:** `POST /api/auth/login`
+* **Database Action:** `SELECT * FROM users WHERE email = $input_email`
+
+
+* **Feature 3: Logout user**
+* **API Endpoint:** `POST /api/auth/logout`
+* **Database Action:** `INSERT INTO auth_logs (user_id, action, timestamp)`
+
+
+* **Feature 4: Update author biography**
 * **API Endpoint:** `PATCH /api/users/profile`
 * **Database Action:** `UPDATE users SET bio = $1 WHERE user_id = $session_id`
 
 
-3. **Feature:** Validate credentials for login.
-* **API Endpoint:** `POST /api/auth/login`
-* **Database Action:** `SELECT user_id, password_hash FROM users WHERE email = $input_email`
-
-
 
 ---
 
-### **2. Content & Taxonomy (The "Publishing" Side)**
+### **2. Content & Publishing**
 
-4. **Feature:** Save a new article.
+* **Feature 5: Create a new article**
 * **API Endpoint:** `POST /api/articles`
-* **Database Action:** `INSERT INTO articles (author_id, title, slug, content)`
+* **Database Action:** `INSERT INTO articles (author_id, title, slug, content, status='published')`
 
 
-5. **Feature:** Link an article to a category.
+* **Feature 6: Link tags to article**
 * **API Endpoint:** `POST /api/articles/{id}/tags`
-* **Database Action:** `INSERT INTO article_tags (article_id, tag_id)`
+* **Database Action:** `INSERT INTO article_tags (article_id, tag_id)` (Max 5 per article)
 
 
-6. **Feature:** Retrieve article metadata for a card view.
+* **Feature 7: View article details**
 * **API Endpoint:** `GET /api/articles/{slug}`
-* **Database Action:** `SELECT a.title, a.content, u.username FROM articles a JOIN users u ON a.author_id = u.user_id WHERE a.slug = $slug`
+* **Database Action:** `SELECT * FROM articles JOIN users ON articles.author_id = users.user_id WHERE slug = $slug`
 
 
-7. **Feature:** Increment global popularity counter.
-* **API Endpoint:** (Internal Trigger on Page Load)
-* **Database Action:** `UPDATE articles SET view_count = view_count + 1 WHERE article_id = $target_id`
+* **Feature 8: Update article**
+* **API Endpoint:** `PUT /api/articles/{id}`
+* **Database Action:** `UPDATE articles SET title, content WHERE id = $id AND author_id = $session_id`
+
+
+* **Feature 9: Delete article**
+* **API Endpoint:** `DELETE /api/articles/{id}`
+* **Database Action:** `DELETE FROM articles WHERE id = $id` (Cascades to `article_tags`)
 
 
 
 ---
 
-### **3. The Diversity Engine (Track B Logic)**
+### **3. Diversity Engine (The Algorithmic Core)**
 
-8. **Feature:** Log a "Reading Interaction" for the algorithm.
+* **Feature 10: Log user interaction (Bias Tracking)**
 * **API Endpoint:** `POST /api/interactions/log`
-* **Database Action:** `INSERT INTO interactions (user_id, article_id, type='read', reading_time_seconds)`
+* **Database Action:** `INSERT INTO interactions (user_id, article_id, type, reading_time_seconds)`
 
 
-9* **Feature:** Identify a user's "Primary Interest" tag.
+* **Feature 11: Identify user's primary interest**
 * **API Endpoint:** `GET /api/analytics/user-bias`
 * **Database Action:** `SELECT tag_id FROM interactions JOIN article_tags USING(article_id) WHERE user_id = $id GROUP BY tag_id ORDER BY COUNT(*) DESC LIMIT 1`
 
 
-10. **Feature:** Fetch "Opposite" content for the feed.
+* **Feature 12: Generate contrarian feed (30% Mix)**
 * **API Endpoint:** `GET /api/feed/pivot`
 * **Database Action:** `SELECT article_id FROM article_tags WHERE tag_id = (SELECT opposite_tag_id FROM tag_mappings WHERE tag_id = $user_bias)`
+
+
+* **Feature 13: Define tag opposites (Admin)**
+* **API Endpoint:** `POST /api/admin/tags/map`
+* **Database Action:** `INSERT INTO tag_mappings (tag_id, opposite_tag_id)`
 
 
 
 ---
 
-### **4. User Engagement & Curation**
+### **4. Engagement & Curation**
 
-11. **Feature:** Bookmark an article for later.
+* **Feature 14: Bookmark an article**
 * **API Endpoint:** `POST /api/bookmarks`
 * **Database Action:** `INSERT INTO bookmarks (user_id, article_id)`
 
 
-12. **Feature:** Remove a saved bookmark.
+* **Feature 15: Remove bookmark**
 * **API Endpoint:** `DELETE /api/bookmarks/{article_id}`
 * **Database Action:** `DELETE FROM bookmarks WHERE user_id = $id AND article_id = $article_id`
 
 
-13 **Feature:** Like an article to boost its rank.
+* **Feature 16: Like an article**
 * **API Endpoint:** `POST /api/interactions/like`
 * **Database Action:** `INSERT INTO interactions (user_id, article_id, type='like')`
 
@@ -85,18 +100,28 @@
 
 ---
 
-### **5. Admin & Structural Logic**
+### **5. Discovery & Analytics**
 
-14 **Feature:** Create a new contrarian relationship.
-* **API Endpoint:** `POST /api/admin/tags/map`
-* **Database Action:** `INSERT INTO tag_mappings (tag_id, opposite_tag_id)`
-
-
-15 **Feature:** List all system tags for the UI picker.
-* **API Endpoint:** `GET /api/tags`
-* **Database Action:** `SELECT tag_id, tag_name FROM tags ORDER BY tag_name ASC`
+* **Feature 17: Search articles by tag**
+* **API Endpoint:** `GET /api/tags/{tag_name}/articles`
+* **Database Action:** `SELECT * FROM articles JOIN article_tags USING(article_id) JOIN tags USING(tag_id) WHERE tag_name = $tag_name`
 
 
+* **Feature 18: Generate Diversity Score**
+* **API Endpoint:** `GET /api/users/me/diversity-index`
+* **Database Action:** `SELECT COUNT(DISTINCT tag_id) FROM interactions JOIN article_tags USING(article_id) WHERE user_id = $id`
 
----
+
+* **Feature 19: View trending articles (Global)**
+* **API Endpoint:** `GET /api/articles/trending`
+* **Database Action:** `SELECT * FROM articles ORDER BY view_count DESC LIMIT 10`
+
+
+* **Feature 20: Increment view count**
+* **API Endpoint:** (Internal trigger)
+* **Database Action:** `UPDATE articles SET view_count = view_count + 1 WHERE id = $id`
+
+
+
+
 
