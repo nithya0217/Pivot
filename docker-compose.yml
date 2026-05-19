@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    # Build the image using the Dockerfile in the current directory
+    build: .
+    # Map Port 8000 on your local computer to Port 8000 inside the container
+    ports:
+      - "8000:8000"
+    # Sync your local files with the container directory for live code editing
+    volumes:
+      - .:/app
+    # Set environment variables if needed
+    environment:
+      - ENV=development
