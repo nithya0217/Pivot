@@ -1,0 +1,10 @@
+Role: Reader (General Public)
+Page: /feed (The main landing page showing articles)
+- Component: <TopNavbar /> - Contains the logo, navigation links, and a "Write a Post" button.
+- Component: <FeedContainer /> - Handles the client-side state and coordinates the GET requests to the personalized discovery/diversity feed endpoints.
+- Component: <ArticleCard /> - A Shadcn Card component displaying the title, author, and tags. Clicking this card issues a silent background POST request to /api/interactions to train the recommendation algorithm.
+
+Role: Author (Content Creator)
+Page: /write (The publishing dashboard)
+- Component: <TopNavbar /> - (Reused global navigation).
+- Component: <PublishForm /> - A Shadcn Form structure containing schema-validated inputs for Title, Content, and a multi-select for Tags. Submitting this form triggers a POST request to /api/articles.
