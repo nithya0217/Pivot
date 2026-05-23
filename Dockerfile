@@ -16,5 +16,5 @@ COPY . .
 # Expose port 8000 for FastAPI traffic
 EXPOSE 8000
 
-# Start Uvicorn with auto-reload enabled for live development
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+# Start Uvicorn using the platform-assigned PORT environment variable
+CMD ["sh", "-c", "uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000} --reload"]
