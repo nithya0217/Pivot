@@ -1,11 +1,17 @@
 import os
+from pathlib import Path
 import asyncpg
 from dotenv import load_dotenv
 from urllib.parse import quote_plus
 
-load_dotenv()
+# Load .env explicitly from the backend folder regardless of current working directory
+dotenv_path = Path(__file__).resolve().parent / ".env"
+load_dotenv(dotenv_path=dotenv_path)
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL is not None and DATABASE_URL.strip() == "":
+    DATABASE_URL = None
+
 if not DATABASE_URL:
     DB_USER = os.getenv("DB_USER", "postgres")
     DB_PASSWORD = os.getenv("DB_PASSWORD")
