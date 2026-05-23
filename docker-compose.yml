@@ -13,3 +13,5 @@ services:
     # Set environment variables if needed
     environment:
       - ENV=development
+    env_file:
+      - .env
