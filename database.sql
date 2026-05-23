@@ -67,6 +67,14 @@ CREATE TABLE bookmarks (
     saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Auth Logs Table (Track authentication and logout events)
+CREATE TABLE auth_logs (
+    log_id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    action VARCHAR(50),  -- 'login', 'logout', 'register'
+    timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -----------------------------------------------------------
 -- 2. DUMMY DATA SEEDING
 -----------------------------------------------------------

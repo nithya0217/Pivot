@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr
-from typing import Optional
+from typing import Optional, List
 
 # --- User & Auth Schemas ---
 class UserRegister(BaseModel):
@@ -20,6 +20,7 @@ class ArticleCreate(BaseModel):
     title: str
     slug: str
     content: str
+    tags: Optional[List[str]] = []
 
 class ArticleUpdate(BaseModel):
     title: str

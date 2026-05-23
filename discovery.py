@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from db import get_db
 
 router = APIRouter(prefix="/api", tags=["Discovery & Analytics"])
 
@@ -13,8 +14,21 @@ async def search_articles_by_tag(tag_name: str):
     - **Database Action**: `SELECT * FROM articles JOIN article_tags USING(article_id) JOIN tags USING(tag_id) WHERE tag_name = $tag_name`
     - **Returns**: Collection tracking entries matching this specific string classification.
     """
-    # Inline comment: Performs an item traversal filtering matched child properties matching the metadata string
-    return [{"article_id": 101, "title": "Matched Tag Metadata Title Article"}]
+    db = await get_db()
+    try:
+        articles = await db.fetch(
+            """
+            SELECT a.article_id, a.title, a.slug, a.content, a.view_count, a.published_at
+            FROM articles a
+            JOIN article_tags at ON a.article_id = at.article_id
+            JOIN tags t ON at.tag_id = t.tag_id
+            WHERE t.tag_name = $1
+            """,
+            tag_name
+        )
+        return articles if articles else []
+    finally:
+        await db.close()
 
 @router.get("/users/me/diversity-index")
 async def get_diversity_score(user_id: int = Depends(get_current_user_id)):
@@ -24,8 +38,20 @@ async def get_diversity_score(user_id: int = Depends(get_current_user_id)):
     - **Database Action**: `SELECT COUNT(DISTINCT tag_id) FROM interactions JOIN article_tags USING(article_id) WHERE user_id = $id`
     - **Returns**: Calculated score object.
     """
-    # Inline comment: Tallies completely distinct item segments encountered by the client user
-    return {"user_id": user_id, "diversity_score": 12}
+    db = await get_db()
+    try:
+        score = await db.fetchval(
+            """
+            SELECT COUNT(DISTINCT at.tag_id)
+            FROM interactions i
+            JOIN article_tags at ON i.article_id = at.article_id
+            WHERE i.user_id = $1
+            """,
+            user_id
+        )
+        return {"user_id": user_id, "diversity_score": score if score else 0}
+    finally:
+        await db.close()
 
 @router.get("/articles/trending")
 async def view_trending_articles():
@@ -34,5 +60,16 @@ async def view_trending_articles():
     - **Database Action**: `SELECT * FROM articles ORDER BY view_count DESC LIMIT 10`
     - **Returns**: Collection slice containing the top viewed articles worldwide.
     """
-    # Inline comment: Explicitly restricts response records to the top 10 items based on aggregate popularity
-    return [{"article_id": 105, "title": "Top Viral Piece", "view_count": 9420}]
+    db = await get_db()
+    try:
+        articles = await db.fetch(
+            """
+            SELECT article_id, title, slug, view_count, published_at, content
+            FROM articles
+            ORDER BY view_count DESC
+            LIMIT 10
+            """
+        )
+        return articles if articles else []
+    finally:
+        await db.close()
