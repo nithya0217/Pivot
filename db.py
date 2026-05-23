@@ -19,9 +19,12 @@ if not DATABASE_URL:
     DB_PORT = os.getenv("DB_PORT", "5432")
     DB_NAME = os.getenv("DB_NAME", "postgres")
 
+    if DB_HOST:
+        DB_HOST = DB_HOST.lstrip("@")
+
     if not DB_PASSWORD or not DB_HOST:
         raise RuntimeError(
-            "Missing database configuration. "
+            "Missing or invalid database configuration. "
             "Set DATABASE_URL or DB_HOST and DB_PASSWORD in environment variables."
         )
 
