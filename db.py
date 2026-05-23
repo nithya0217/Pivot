@@ -39,12 +39,14 @@ async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
+        # Use SSL for production, disable for local dev
+        ssl_mode = 'require' if os.getenv('ENV') == 'production' else False
         pool = await asyncpg.create_pool(
             DATABASE_URL,
             min_size=5,
             max_size=20,
             command_timeout=60,
-            ssl='require',
+            ssl=ssl_mode,
         )
     return pool
 
