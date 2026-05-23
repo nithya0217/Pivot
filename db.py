@@ -1,14 +1,27 @@
 import os
 import asyncpg
 from dotenv import load_dotenv
+from urllib.parse import quote_plus
 
 load_dotenv()
 
-# Supabase PostgreSQL connection string
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres.xnvqpzjazbxkgupegusc:Pivot2026@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    DB_USER = os.getenv("DB_USER", "postgres")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_HOST = os.getenv("DB_HOST")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DB_NAME = os.getenv("DB_NAME", "postgres")
+
+    if not DB_PASSWORD or not DB_HOST:
+        raise RuntimeError(
+            "Missing database configuration. "
+            "Set DATABASE_URL or DB_HOST and DB_PASSWORD in environment variables."
+        )
+
+    DATABASE_URL = (
+        f"postgresql://{DB_USER}:{quote_plus(DB_PASSWORD)}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+    )
 
 # Connection pool
 pool = None
