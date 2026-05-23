@@ -20,11 +20,12 @@ Your articles and other data were not being saved to the database because:
 - Manages connection pool to Supabase PostgreSQL
 - Handles async connection acquisition and release
 - Initializes on app startup, closes on shutdown
-- Connection string: `postgresql://postgres:[Pivot2026@#]@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres
+- Connection string: `postgresql://postgres:Pivot2026%40%23@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres`
+
 ### 3. Environment Configuration
 **File: `.env` (NEW)**
 ```
-DATABASE_URL=`postgresql://postgres:[Pivot2026@#]@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres
+DATABASE_URL=postgresql://postgres:Pivot2026%40%23@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres
 ```
 
 ### 4. Updated All Endpoint Files with Real Database Operations
@@ -171,7 +172,8 @@ Supabase PostgreSQL Database ✅ (NOW SAVING DATA!)
 ## Troubleshooting
 
 ### Connection Failed Error
-- Verify database URL in `.env`
+- Verify database URL in `.env` or in your Render service environment variables.
+- If deploying to Render, set `DATABASE_URL` to `postgresql://postgres:Pivot2026%40%23@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres`.
 - Ensure Supabase database is running
 - Check network connectivity to Supabase
 
