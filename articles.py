@@ -83,6 +83,22 @@ async def create_article(article: ArticleCreate, author_id: int = Depends(get_cu
     finally:
         await db.close()
 
+@router.get("/articles")
+async def list_articles():
+    """
+    **Feature 7a: List articles**
+    - **Database Action**: `SELECT * FROM articles ORDER BY published_at DESC LIMIT 20`
+    - **Returns**: Article listing for the feed.
+    """
+    db = await get_db()
+    try:
+        rows = await db.fetch(
+            "SELECT article_id, title, slug, content, view_count, published_at FROM articles ORDER BY published_at DESC LIMIT 20"
+        )
+        return [dict(row) for row in rows] if rows else []
+    finally:
+        await db.close()
+
 @router.post("/articles/{id}/tags")
 async def link_tags_to_article(id: int, tag_payload: TagLink):
     """
