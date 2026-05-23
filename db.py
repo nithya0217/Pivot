@@ -4,11 +4,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Supabase PostgreSQL connection string
-DATABASE_URL = os.getenv(
-    "DATABASE_URL",
-    "postgresql://postgres.xnvqpzjazbxkgupegusc:Pivot2026@#@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres"
-)
+DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError(
+        "Missing DATABASE_URL environment variable. "
+        "Set DATABASE_URL in .env or in the deployment environment."
+    )
 
 # Connection pool
 pool = None
