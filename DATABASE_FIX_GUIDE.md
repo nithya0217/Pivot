@@ -20,12 +20,11 @@ Your articles and other data were not being saved to the database because:
 - Manages connection pool to Supabase PostgreSQL
 - Handles async connection acquisition and release
 - Initializes on app startup, closes on shutdown
-- Connection string: `postgresql://postgres.xnvqpzjazbxkgupegusc:Pivot2026@#@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres`
-
+- Connection string: `postgresql://postgres:[Pivot2026@#]@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres
 ### 3. Environment Configuration
 **File: `.env` (NEW)**
 ```
-DATABASE_URL=postgresql://postgres.xnvqpzjazbxkgupegusc:Pivot2026@#@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=`postgresql://postgres:[Pivot2026@#]@db.xnvqpzjazbxkgupegusc.supabase.co:5432/postgres
 ```
 
 ### 4. Updated All Endpoint Files with Real Database Operations
