@@ -1,48 +1,40 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from contextlib import asynccontextmanager
 from db import init_db, close_db
+import interactions
 
-# Import the router objects directly from your flat files
-from users import router as users_router
-from articles import router as articles_router
-from diversity import router as diversity_router
-from interactions import router as interactions_router
-from discovery import router as discovery_router
+# Lifespan context manager
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await init_db()
+    yield
+    # Shutdown
+    await close_db()
 
-app = FastAPI(
-    title="Pivot Divergent Content Delivery Network Engine",
-    version="1.0.0"
-)
+app = FastAPI(lifespan=lifespan)
 
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=[
+        "https://pivot-frontend-1lehl2hvt-nithya-s-projects3.vercel.app",
+        "http://localhost:3000",
+        "http://localhost:8000",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# Bind the individual components directly onto the app instance
-app.include_router(users_router)
-app.include_router(articles_router)
-app.include_router(diversity_router)
-app.include_router(interactions_router)
-app.include_router(discovery_router)
+# Include routers
+app.include_router(interactions.router)
 
-@app.on_event("startup")
-async def startup():
-    """Initialize database connection on app startup"""
-    await init_db()
+@app.get("/")
+async def root():
+    return {"message": "Pivot API is running"}
 
-@app.on_event("shutdown")
-async def shutdown():
-    """Close database connection on app shutdown"""
-    await close_db()
-
-@app.get("/", tags=["Root Gateway Entry"])
-async def root_gateway_index():
-    return {
-        "status": "online",
-        "documentation_path": "/docs"
-    }
+@app.get("/health")
+async def health():
+    return {"status": "healthy"}
