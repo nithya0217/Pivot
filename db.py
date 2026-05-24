@@ -4,7 +4,6 @@ from pathlib import Path
 import asyncpg
 from dotenv import load_dotenv
 
-# Load .env explicitly from the backend folder regardless of current working directory
 dotenv_path = Path(__file__).resolve().parent / ".env"
 load_dotenv(dotenv_path=dotenv_path)
 
@@ -32,21 +31,15 @@ if not DATABASE_URL:
         f"postgresql://{DB_USER}:[REDACTED]@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
-# Connection pool
 pool = None
 
 async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
-        # Create SSL context for production (Supabase requires SSL with SNI)
-        ssl_context = None
-        if os.getenv('ENV') == 'production':
-            ssl_context = ssl.create_default_context()
-            ssl_context.check_hostname = False
-            ssl_context.verify_mode = ssl.CERT_NONE
-            # Set server_hostname for SNI
-            ssl_context.server_hostname = "aws-1-ap-southeast-1.pooler.supabase.com"
+        ssl_context = ssl.create_default_context()
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
@@ -54,10 +47,6 @@ async def init_db():
             max_size=20,
             command_timeout=60,
             ssl=ssl_context,
-            server_settings={
-                'application_name': 'pivot-web',
-                'options': '-c statement_timeout=30000'
-            }
         )
     return pool
 
