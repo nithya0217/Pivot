@@ -20,6 +20,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://pivot-frontend-1lehl2hvt-nithya-s-projects3.vercel.app",
+        "https://pivot.up.railway.app",
         "http://localhost:3000",
         "http://localhost:8000",
     ],
