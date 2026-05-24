@@ -28,6 +28,9 @@ services:
     environment:
       - ENV=development
       - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_NAME=postgres
     depends_on:
       db:
         condition: service_healthy
