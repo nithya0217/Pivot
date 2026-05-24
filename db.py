@@ -29,7 +29,7 @@ if not DATABASE_URL:
         )
 
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:[REDACTED]@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
 # Connection pool
@@ -43,8 +43,8 @@ async def init_db():
         ssl_context = None
         if os.getenv('ENV') == 'production':
             ssl_context = ssl.create_default_context()
-            ssl_context.check_hostname = True
-            ssl_context.verify_mode = ssl.CERT_REQUIRED
+            ssl_context.check_hostname = False
+            ssl_context.verify_mode = ssl.CERT_NONE
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
