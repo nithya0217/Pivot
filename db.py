@@ -1,4 +1,5 @@
 import os
+import ssl
 from pathlib import Path
 import asyncpg
 from dotenv import load_dotenv
@@ -29,7 +30,7 @@ if not DATABASE_URL:
         )
 
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:{quote_plus(DB_PASSWORD)}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
 # Connection pool
@@ -39,8 +40,15 @@ async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
-        # Use SSL for production, disable for local dev
-        ssl_mode = 'require' if os.getenv('ENV') == 'production' else False
+        # Configure SSL for production (Supabase requires SSL)
+        if os.getenv('ENV') == 'production':
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = True
+            ssl_context.verify_mode = ssl.CERT_REQUIRED
+            ssl_mode = ssl_context
+        else:
+            ssl_mode = False
+        
         pool = await asyncpg.create_pool(
             DATABASE_URL,
             min_size=5,
