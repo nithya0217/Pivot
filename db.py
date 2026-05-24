@@ -3,7 +3,6 @@ import ssl
 from pathlib import Path
 import asyncpg
 from dotenv import load_dotenv
-from urllib.parse import quote_plus
 
 # Load .env explicitly from the backend folder regardless of current working directory
 dotenv_path = Path(__file__).resolve().parent / ".env"
@@ -40,15 +39,19 @@ async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
-        # Use SSL prefer (not require) to allow connection attempts
-        ssl_mode = 'prefer' if os.getenv('ENV') == 'production' else False
+        # Create SSL context for production (Supabase requires SSL)
+        ssl_context = None
+        if os.getenv('ENV') == 'production':
+            ssl_context = ssl.create_default_context()
+            ssl_context.check_hostname = True
+            ssl_context.verify_mode = ssl.CERT_REQUIRED
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
             min_size=5,
             max_size=20,
             command_timeout=60,
-            ssl=ssl_mode,
+            ssl=ssl_context,
         )
     return pool
 
