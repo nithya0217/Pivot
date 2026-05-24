@@ -10,6 +10,6 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgresql://postgres:PiVotN09123@aws-1-ap-southeast-1.pooler.supabase.com:6543/postgres?sslmode=require&ssl=true
+      - DATABASE_URL=postgresql://postgres:PiVotN09123@db.tjfqvppsaqcfnrueccuv.supabase.co:5432/postgres
       - ENV=production
       - PORT=8000
