@@ -30,7 +30,7 @@ if not DATABASE_URL:
         )
 
     DATABASE_URL = (
-        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"postgresql://{DB_USER}:[REDACTED]@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
 # Connection pool
@@ -40,14 +40,8 @@ async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
-        # Configure SSL for production (Supabase requires SSL)
-        if os.getenv('ENV') == 'production':
-            ssl_context = ssl.create_default_context()
-            ssl_context.check_hostname = True
-            ssl_context.verify_mode = ssl.CERT_REQUIRED
-            ssl_mode = ssl_context
-        else:
-            ssl_mode = False
+        # Use SSL prefer (not require) to allow connection attempts
+        ssl_mode = 'prefer' if os.getenv('ENV') == 'production' else False
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
