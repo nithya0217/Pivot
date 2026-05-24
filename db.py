@@ -1,6 +1,7 @@
 import os
 import ssl
 from pathlib import Path
+from urllib.parse import urlparse
 import asyncpg
 from dotenv import load_dotenv
 
@@ -31,15 +32,25 @@ if not DATABASE_URL:
         f"postgresql://{DB_USER}:[REDACTED]@{DB_HOST}:{DB_PORT}/{DB_NAME}"
     )
 
+# Remove query params from URL for asyncpg
+if '?' in DATABASE_URL:
+    DATABASE_URL = DATABASE_URL.split('?')[0]
+
 pool = None
 
 async def init_db():
     """Initialize the database connection pool"""
     global pool
     if pool is None:
+        # Extract hostname for SNI
+        parsed = urlparse(DATABASE_URL)
+        hostname = parsed.hostname
+        
+        # Create SSL context with SNI
         ssl_context = ssl.create_default_context()
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
+        ssl_context.server_hostname = hostname
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
