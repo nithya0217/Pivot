@@ -38,6 +38,18 @@ if '?' in DATABASE_URL:
 
 pool = None
 
+class PooledConnection:
+    def __init__(self, connection, pool):
+        self._connection = connection
+        self._pool = pool
+
+    def __getattr__(self, name):
+        return getattr(self._connection, name)
+
+    async def close(self):
+        """Release the connection back to the pool."""
+        await self._pool.release(self._connection)
+
 async def init_db():
     """Initialize the database connection pool"""
     global pool
@@ -70,7 +82,8 @@ async def get_db():
     """Get a connection from the pool"""
     if pool is None:
         await init_db()
-    return await pool.acquire()
+    connection = await pool.acquire()
+    return PooledConnection(connection, pool)
 
 async def close_db():
     """Close the connection pool"""
