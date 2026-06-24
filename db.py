@@ -43,14 +43,19 @@ async def init_db():
     global pool
     if pool is None:
         # Extract hostname for SNI
-        parsed = urlparse(DATABASE_URL)
-        hostname = parsed.hostname
+        hostname = None
+        try:
+            parsed = urlparse(DATABASE_URL)
+            hostname = parsed.hostname
+        except ValueError:
+            pass
         
         # Create SSL context with SNI
         ssl_context = ssl.create_default_context()
         ssl_context.check_hostname = False
         ssl_context.verify_mode = ssl.CERT_NONE
-        ssl_context.server_hostname = hostname
+        if hostname:
+            ssl_context.server_hostname = hostname
         
         pool = await asyncpg.create_pool(
             DATABASE_URL,
