@@ -25,10 +25,11 @@ app.add_middleware(
 
 # Bind the individual components directly onto the app instance
 app.include_router(users_router)
+app.include_router(discovery_router)
 app.include_router(articles_router)
 app.include_router(diversity_router)
 app.include_router(interactions_router)
-app.include_router(discovery_router)
+
 
 @app.on_event("startup")
 async def startup():
