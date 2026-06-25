@@ -30,12 +30,16 @@ async def increment_view_count(id: int):
 async def create_article(article: ArticleCreate, author_id: int = Depends(get_current_user_id)):
     """
     **Feature 5: Create a new article**
-    - **JSON Parameters**: `title`, `slug`, `content`, `tags`
+    - **JSON Parameters**: `title`, `slug`, `content`, `tags`, `author_id`
     - **Database Action**: `INSERT INTO articles (author_id, title, slug, content)` and link tags
     - **Returns**: Struct describing the persisted article metadata.
     """
     db = await get_db()
     try:
+        # Prefer author_id supplied by the frontend when auth is not fully implemented.
+        if article.author_id is not None:
+            author_id = article.author_id
+
         # Create the article
         result = await db.fetchrow(
             "INSERT INTO articles (author_id, title, slug, content) VALUES ($1, $2, $3, $4) RETURNING article_id, author_id, slug, published_at",

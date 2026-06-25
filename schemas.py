@@ -21,6 +21,7 @@ class ArticleCreate(BaseModel):
     slug: str
     content: str
     tags: Optional[List[str]] = []
+    author_id: Optional[int] = None
 
 class ArticleUpdate(BaseModel):
     title: str

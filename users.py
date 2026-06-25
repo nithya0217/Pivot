@@ -28,7 +28,13 @@ async def register_user(user: UserRegister):
             "INSERT INTO users (username, email, password_hash, is_author) VALUES ($1, $2, $3, $4) RETURNING user_id, email",
             user.username, user.email, password_hash, user.is_author
         )
-        return {"message": "User registered successfully", "user_id": result['user_id'], "email": result['email']}
+        return {
+            "message": "User registered successfully",
+            "user_id": result['user_id'],
+            "email": result['email'],
+            "username": user.username,
+            "is_author": user.is_author,
+        }
     except Exception as e:
         return {"error": str(e)}, 400
     finally:
