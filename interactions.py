@@ -25,6 +25,15 @@ async def log_user_interaction(interaction: InteractionLog, user_id: int = Depen
     finally:
         await db.close()
 
+
+@router.post("/interactions")
+async def register_interaction(interaction: InteractionLog, user_id: int = Depends(get_current_user_id)):
+    """
+    Compatibility endpoint: POST /api/interactions
+    Forwards to the original interaction logging implementation.
+    """
+    return await log_user_interaction(interaction, user_id)
+
 @router.get("/analytics/user-bias")
 async def identify_user_bias(user_id: int = Depends(get_current_user_id)):
     """
