@@ -64,9 +64,11 @@ async def view_trending_articles():
     try:
         articles = await db.fetch(
             """
-            SELECT article_id, title, slug, view_count, published_at, content
-            FROM articles
-            ORDER BY view_count DESC
+            SELECT a.article_id, a.title, a.slug, a.view_count, a.published_at, a.content,
+                   u.user_id AS author_id, u.username AS author_username
+            FROM articles a
+            LEFT JOIN users u ON a.author_id = u.user_id
+            ORDER BY a.view_count DESC
             LIMIT 10
             """
         )
