@@ -75,6 +75,7 @@ async def init_db():
             max_size=20,
             command_timeout=60,
             ssl=ssl_context,
+            statement_cache_size=0,
         )
     return pool
 
