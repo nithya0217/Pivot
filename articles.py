@@ -141,7 +141,7 @@ async def view_article_details(slug: str):
     db = await get_db()
     try:
         result = await db.fetchrow(
-            "SELECT a.*, u.username, u.email FROM articles a JOIN users u ON a.author_id = u.user_id WHERE a.slug = $1",
+            "SELECT a.*, u.username, u.email FROM articles a LEFT JOIN users u ON a.author_id = u.user_id WHERE a.slug = $1",
             slug
         )
         if not result:
@@ -158,8 +158,8 @@ async def view_article_details(slug: str):
             "published_at": result['published_at'],
             "author": {
                 "user_id": result['author_id'],
-                "username": result['username'],
-                "email": result['email']
+                "username": result['username'] if result['username'] else None,
+                "email": result['email'] if result['email'] else None
             }
         }
     finally:
